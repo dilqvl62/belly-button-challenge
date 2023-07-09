@@ -7,7 +7,8 @@ const dataPromise = d3.json(url);
 // Fetch the JSON 
 dataPromise.then((data) => {
 
-
+//Initialize the div with a default
+function init() {
 // Slice the first 10 object for plotting 
 let sampleValues = data.samples[0].sample_values.slice(0, 10); 
 let otuIds = data.samples[0].otu_ids.slice(0, 10).map((otuId) => `OTU ${otuId}`);
@@ -30,14 +31,12 @@ let trace1 = {
     orientation: "h"
 
 }
-// Apply a title to the layout
-let layout = {
-    title : "sample values for the first individual"
-}
 // Data array
 let traceData = [trace1]
 // Render the plot to the div tag with id "bar"
-Plotly.newPlot("bar", traceData, layout)
+Plotly.newPlot("bar", traceData)
+}
+init();
 })
 
 
