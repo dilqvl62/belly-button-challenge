@@ -36,7 +36,24 @@ let traceData = [trace1]
 // Render the plot to the div tag with id "bar"
 Plotly.newPlot("bar", traceData)
 }
-init();
+// This function is to generate dropdown options
+function generateDropdownOptions(data) {
+    const select = d3.select("#selDataset");
+  
+    select.selectAll("option")
+      .data(data.samples)
+      .enter()
+      .append("option")
+      .attr("value", d => d.id)
+      .text(d => d.id);
+  }
+// This function is called when a dropdown menu is selected
+// const optionChanged = () => {
+
+// }
+
+ init();
+ generateDropdownOptions(data)
 })
 
 
