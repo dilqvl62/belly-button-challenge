@@ -51,8 +51,23 @@ function init() {
     let traceBar_chart = [trace1];
      // Render the plot to the div tag with id "bar"
      Plotly.newPlot("bar", traceBar_chart);
-     // Create a bubble chart that displays each sample.
-     BubbleChart()
+     
+     // Create a bubble chart that displays first sample.
+     let trace2 = {
+      x : sharedData.samples[0].otu_ids,
+      y : sharedData.samples[0].sample_values,
+      text: sharedData.samples[0].otu_labels , 
+      mode: 'markers', 
+      marker: {
+        size:sharedData.samples[0].sample_values,
+        color: sharedData.samples[0].otu_ids,
+        colorscale: 'Earth',
+        sizemode: 'diameter'
+      }
+    }
+    let traceBubble_chart = [trace2];
+    // Render the plot to the div tag with id "bar"
+    Plotly.newPlot("bubble", traceBubble_chart);
   } else {
     // Handle the case when data is not yet available
     console.log("Data is not yet available");
@@ -62,11 +77,11 @@ function init() {
 //This function is called when a dropdown menu is selected
 const optionChanged = (value) => {
   if(sharedData){
-    // Use D3 to select the dropdown menu
-    let dropdownMenu = d3.select("#selDataset"); 
     // Initialize x and y arrays 
     let x = [];
     let y = [];
+    let x_bubble = [];
+    let y_bubble = [];
     //loop through the data 
     for (let i =0; i < sharedData.samples.length; i ++){
       if(value === sharedData.samples[i].id ){
@@ -76,52 +91,43 @@ const optionChanged = (value) => {
           // getting the top 10 OTU`s for each individual
           let sampleValues = sharedData.samples[i].sample_values.slice(0, 10); 
           let otuIds = sharedData.samples[i].otu_ids.slice(0, 10).map((otuId) => `OTU ${otuId}`);
+          let otu_Labels = sharedData.samples[i].otu_labels.slice(0, 10);
           // Reverse the data 
           let reverseSampleValues = sampleValues.reverse();
           let reversOtuOds = otuIds.reverse();
+          let reversed_otu_labels = otu_Labels.reverse();
           //consol log the data 
           console.log(reverseSampleValues);
           console.log(otuIds);
           // assigning the data to x and y
           x = reverseSampleValues;
           y = reversOtuOds;
-         //restyle the plot
+          lables = reversed_otu_labels;
+          //assigning the data to x_bubble and y_bubble
+          x_bubble = sharedData.samples[i].otu_ids;
+          y_bubble = sharedData.samples[i].sample_values;
+          text = sharedData.samples[i].otu_labels;
+          size = sharedData.samples[i].sample_values;
+          color = sharedData.samples[i].otu_ids;
+         //restyle the bar plot
          Plotly.restyle("bar", "x", [x]);
          Plotly.restyle("bar", "y", [y]);
+         Plotly.restyle("bar", "text", [lables]);
+         //restyle the bubble chart 
+         Plotly.restyle("bubble", "x", [x_bubble]);
+         Plotly.restyle("bubble", "y", [y_bubble]);
+         Plotly.restyle("bubble", "text", [text]);
+         Plotly.restyle("bubble", "size", [size]);
+         Plotly.restyle("bubble", "color", [color]);
  
          }
     }
- }
+ } else {
+  // Handle the case when data is not yet available
+  console.log("Data is not yet available");
+}
 
 }
-// Bubble chart
-    // This function will trace a bubble chart for first sample
-const BubbleChart =() =>{
-  if(sharedData){
-    for(let i =0; i < sharedData.samples.length;i++){
-        let trace2 = {
-          x : sharedData.samples[i].otu_ids,
-          y : sharedData.samples[i].sample_values,
-          text: sharedData.samples[i].otu_labels , 
-          mode: 'markers', 
-          marker: {
-            size:sharedData.samples[i].sample_values,
-            color: sharedData.samples[i].otu_ids,
-            colorscale: 'Earth',
-            sizemode: 'diameter'
-          }
-        }
-        let traceBubble_chart = [trace2];
-        // Render the plot to the div tag with id "bar"
-        Plotly.newPlot("bubble", traceBubble_chart);
-      }
-
-      }else {
-        // Handle the case when data is not yet available
-        console.log("Data is not yet available");
-    };
- }
-   
 
 
 
