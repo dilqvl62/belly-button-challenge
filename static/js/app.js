@@ -25,25 +25,13 @@ function init() {
      .append("option")
      .attr("value", d => d.id)
      .text(d => d.id);
-    // Getting the top 10 OTU`s for only first individual with id= 940.  
-    let sampleValues = sharedData.samples[0].sample_values.slice(0, 10); 
-    let otuIds = sharedData.samples[0].otu_ids.slice(0, 10).map((otuId) => `OTU ${otuId}`);
-    let otuLabels = sharedData.samples[0].otu_labels.slice(0, 10);
-    // Reverse the data 
-    let reverseSampleValues = sampleValues.reverse();
-    let reversOtuIds = otuIds.reverse();
-    let reverseOtuLabels = otuLabels.reverse();
-    //consol log the data 
-    console.log(reverseSampleValues);
-    console.log(otuIds);
-    console.log(reverseOtuLabels);
-
+    
     // Trace for the first individual
     // Bar chart
     let trace1 = {
-        x : reverseSampleValues,
-        y : reversOtuIds,
-        text: reverseOtuLabels, 
+        x : sharedData.samples[0].sample_values.slice(0, 10).reverse(),
+        y : sharedData.samples[0].otu_ids.slice(0, 10).map((otuId) => `OTU ${otuId}`).reverse(),
+        text: sharedData.samples[0].otu_labels.slice(0, 10).reverse(), 
         type: "bar",
         orientation: "h"
 
@@ -71,7 +59,21 @@ function init() {
   } else {
     // Handle the case when data is not yet available
     console.log("Data is not yet available");
-}
+  }
+  // Select the panel div
+  let metadataPanel = d3.select("#sample-metadata")
+  //Bind the data to the panel div
+   metadataPanel.selectAll("div")
+  .data([sharedData.metadata[0]])
+  .enter()
+  .append("div")
+  .html(d => {
+    return Object.entries(d).forEach(([key, value]) => {
+      metadataPanel.append("h6").text(`${key}: ${value}`);
+    });
+      
+  })
+  
 }
 
 //This function is called when a dropdown menu is selected
@@ -82,50 +84,53 @@ const optionChanged = (value) => {
     let y = [];
     let x_bubble = [];
     let y_bubble = [];
+    let Panel = d3.select("#sample-metadata");
     //loop through the data 
     for (let i =0; i < sharedData.samples.length; i ++){
       if(value === sharedData.samples[i].id ){
           //console log the value and the id
           console.log(value);
           console.log(sharedData.samples[i].id );
-          // getting the top 10 OTU`s for each individual
-          let sampleValues = sharedData.samples[i].sample_values.slice(0, 10); 
-          let otuIds = sharedData.samples[i].otu_ids.slice(0, 10).map((otuId) => `OTU ${otuId}`);
-          let otu_Labels = sharedData.samples[i].otu_labels.slice(0, 10);
-          // Reverse the data 
-          let reverseSampleValues = sampleValues.reverse();
-          let reversOtuOds = otuIds.reverse();
-          let reversed_otu_labels = otu_Labels.reverse();
-          //consol log the data 
-          console.log(reverseSampleValues);
-          console.log(otuIds);
+
           // assigning the data to x and y
-          x = reverseSampleValues;
-          y = reversOtuOds;
-          lables = reversed_otu_labels;
+          x = sharedData.samples[i].sample_values.slice(0, 10); ;
+          y = sharedData.samples[i].otu_ids.slice(0, 10).map((otuId) => `OTU ${otuId}`);
+          lables = sharedData.samples[i].otu_labels.slice(0, 10);
+           //restyle the bar plot
+          Plotly.restyle("bar", "x", [x]);
+          Plotly.restyle("bar", "y", [y]);
+          Plotly.restyle("bar", "text", [lables]);
+         
           //assigning the data to x_bubble and y_bubble
           x_bubble = sharedData.samples[i].otu_ids;
           y_bubble = sharedData.samples[i].sample_values;
           text = sharedData.samples[i].otu_labels;
           size = sharedData.samples[i].sample_values;
           color = sharedData.samples[i].otu_ids;
-         //restyle the bar plot
-         Plotly.restyle("bar", "x", [x]);
-         Plotly.restyle("bar", "y", [y]);
-         Plotly.restyle("bar", "text", [lables]);
          //restyle the bubble chart 
          Plotly.restyle("bubble", "x", [x_bubble]);
          Plotly.restyle("bubble", "y", [y_bubble]);
          Plotly.restyle("bubble", "text", [text]);
          Plotly.restyle("bubble", "size", [size]);
          Plotly.restyle("bubble", "color", [color]);
- 
+
+         Panel.selectAll("div")
+        .data(sharedData.metadata[i])
+        .enter()
+        .append("div")
+        .html(d => {
+          return d.forEach(([key, value]) => {
+                   Panel.append("h6").text(`${key}: ${value}`)
+          });
+    });
          }
     }
+     
  } else {
   // Handle the case when data is not yet available
   console.log("Data is not yet available");
-}
+  }
+  
 
 }
 
