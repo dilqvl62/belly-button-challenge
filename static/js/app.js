@@ -75,7 +75,13 @@ function init() {
   })
   
 }
-
+// Function to restyle the plots 
+let restyle = (plot, prop, values ) => {
+  prop.forEach((prop, index) => {
+    Plotly.restyle(plot, prop, values[index]);
+  
+  });
+} 
 //This function is called when a dropdown menu is selected
 const optionChanged = (value) => {
   if(sharedData){
@@ -93,14 +99,14 @@ const optionChanged = (value) => {
           console.log(sharedData.samples[i].id );
 
           // assigning the data to x and y
-          x = sharedData.samples[i].sample_values.slice(0, 10); ;
-          y = sharedData.samples[i].otu_ids.slice(0, 10).map((otuId) => `OTU ${otuId}`);
-          lables = sharedData.samples[i].otu_labels.slice(0, 10);
+          x = sharedData.samples[i].sample_values.slice(0, 10).reverse() ;
+          y = sharedData.samples[i].otu_ids.slice(0, 10).map((otuId) => `OTU ${otuId}`).reverse();
+          labels = sharedData.samples[i].otu_labels.slice(0, 10).reverse();
            //restyle the bar plot
-          Plotly.restyle("bar", "x", [x]);
-          Plotly.restyle("bar", "y", [y]);
-          Plotly.restyle("bar", "text", [lables]);
-         
+           const properties = ["x", "y", "text"];
+           const values = [x, y, labels];
+           restyle("bar", properties, [values]);
+                
           //assigning the data to x_bubble and y_bubble
           x_bubble = sharedData.samples[i].otu_ids;
           y_bubble = sharedData.samples[i].sample_values;
@@ -108,11 +114,9 @@ const optionChanged = (value) => {
           size = sharedData.samples[i].sample_values;
           color = sharedData.samples[i].otu_ids;
          //restyle the bubble chart 
-         Plotly.restyle("bubble", "x", [x_bubble]);
-         Plotly.restyle("bubble", "y", [y_bubble]);
-         Plotly.restyle("bubble", "text", [text]);
-         Plotly.restyle("bubble", "size", [size]);
-         Plotly.restyle("bubble", "color", [color]);
+         const props = ["x", "y", "text", "size", "color"];
+         const valueProps = [x_bubble, y_bubble, text, size, color]
+         restyle("bubble", props, [valueProps])
 
          Panel.selectAll("div")
         .data(sharedData.metadata[i])
