@@ -78,7 +78,7 @@ function init() {
 // Function to restyle the plots 
 let restyle = (plot, prop, values ) => {
   prop.forEach((prop, index) => {
-    Plotly.restyle(plot, prop, values[index]);
+    Plotly.restyle(plot, prop, [values[index]]);
   
   });
 } 
@@ -100,12 +100,12 @@ const optionChanged = (value) => {
 
           // assigning the data to x and y
           x = sharedData.samples[i].sample_values.slice(0, 10).reverse() ;
-          y = sharedData.samples[i].otu_ids.slice(0, 10).map((otuId) => `OTU ${otuId}`).reverse();
+          y = sharedData.samples[i].otu_ids.map((otuId) =>  `OTU ${otuId}`).slice(0, 10).reverse();
           labels = sharedData.samples[i].otu_labels.slice(0, 10).reverse();
            //restyle the bar plot
            const properties = ["x", "y", "text"];
            const values = [x, y, labels];
-           restyle("bar", properties, [values]);
+           restyle("bar", properties, values);
                 
           //assigning the data to x_bubble and y_bubble
           x_bubble = sharedData.samples[i].otu_ids;
@@ -116,7 +116,7 @@ const optionChanged = (value) => {
          //restyle the bubble chart 
          const props = ["x", "y", "text", "size", "color"];
          const valueProps = [x_bubble, y_bubble, text, size, color]
-         restyle("bubble", props, [valueProps])
+         restyle("bubble", props, valueProps)
 
          Panel.selectAll("div")
         .data(sharedData.metadata[i])
