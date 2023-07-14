@@ -13,7 +13,6 @@ dataPromise.then((data) => {
   console.log('Error fetching data:', error);
 });
 
-//-----------------------------------------------------------//
 
 // Function to display each key-value pair from the metadata 
 let metadataPanel = (metadatasample) =>{
@@ -92,7 +91,7 @@ let restyle = (plot, prop, values ) => {
   });
 } 
 
-//-----------------------------------------------------------//
+
 
 //This function is called when a dropdown menu is selected
 const optionChanged = (value) => {
