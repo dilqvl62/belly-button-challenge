@@ -13,6 +13,26 @@ dataPromise.then((data) => {
   console.log('Error fetching data:', error);
 });
 
+//-----------------------------------------------------------//
+
+// Function to display each key-value pair from the metadata 
+let metadataPanel = (metadatasample) =>{
+
+      let Panel = d3.select("#sample-metadata");
+      // Remove existing content
+      Panel.html(""); 
+      Panel.selectAll("div")
+            .data([metadatasample])
+            .enter()
+            .append("div")
+            .html(d => {
+              return Object.entries(d).forEach(([key, value]) => {
+                      Panel.append("h6").text(`${key}: ${value}`)
+              });
+        });
+
+}
+
 //Initialize the div with a default
 function init() {
   //checking if the sharedData is avalaible 
@@ -60,21 +80,10 @@ function init() {
     // Handle the case when data is not yet available
     console.log("Data is not yet available");
   }
-  // Select the panel div
-  let metadataPanel = d3.select("#sample-metadata")
-  //Bind the data to the panel div
-   metadataPanel.selectAll("div")
-  .data([sharedData.metadata[0]])
-  .enter()
-  .append("div")
-  .html(d => {
-    return Object.entries(d).forEach(([key, value]) => {
-      metadataPanel.append("h6").text(`${key}: ${value}`);
-    });
-      
-  })
-  
+  // Select the first sample
+  metadataPanel(sharedData.metadata[0])
 }
+
 // Function to restyle the plots 
 let restyle = (plot, prop, values ) => {
   prop.forEach((prop, index) => {
@@ -82,6 +91,9 @@ let restyle = (plot, prop, values ) => {
   
   });
 } 
+
+//-----------------------------------------------------------//
+
 //This function is called when a dropdown menu is selected
 const optionChanged = (value) => {
   if(sharedData){
@@ -90,7 +102,7 @@ const optionChanged = (value) => {
     let y = [];
     let x_bubble = [];
     let y_bubble = [];
-    let Panel = d3.select("#sample-metadata");
+    
     //loop through the data 
     for (let i =0; i < sharedData.samples.length; i ++){
       if(value === sharedData.samples[i].id ){
@@ -115,21 +127,15 @@ const optionChanged = (value) => {
           color = sharedData.samples[i].otu_ids;
          //restyle the bubble chart 
          const props = ["x", "y", "text", "size", "color"];
-         const valueProps = [x_bubble, y_bubble, text, size, color]
-         restyle("bubble", props, valueProps)
-
-         Panel.selectAll("div")
-        .data(sharedData.metadata[i])
-        .enter()
-        .append("div")
-        .html(d => {
-          return d.forEach(([key, value]) => {
-                   Panel.append("h6").text(`${key}: ${value}`)
-          });
-    });
+         const valueProps = [x_bubble, y_bubble, text, size, color];
+         restyle("bubble", props, valueProps);
+         //displaying the metadata as the option changes
+         console.log(sharedData.metadata[i]);
+         metadataPanel(sharedData.metadata[i]);
+         
          }
+         
     }
-     
  } else {
   // Handle the case when data is not yet available
   console.log("Data is not yet available");
